@@ -1,0 +1,100 @@
+#!/bin/bash
+#
+#  bl - Blacklist manager for /etc/hosts
+#  Version 0.1
+#  Copyright 2024 Evan Edwards
+#  License: MIT
+#  https://github.com/EvanEdwards/bl 
+
+
+blSource="/etc/hosts"
+blAddress="127.0.130.1"
+
+declare -A opts=()
+
+
+function bl_options_load {
+  for entry in $( grep '^#!bl ' "${blSource}" | sed -E 's/^[^ ]*[ ]*//' ) ; do
+    opts[${entry/:*/}]="${entry/*:/}"
+  done
+}
+
+function bl_options_print {
+  for key in "${!opts[@]}"; do 
+    printf "%8s: %s\n" "${key}" "${opts[${key}]}" 
+  done |sort
+}
+
+function bl_current_print {
+  printf "        - %s\n" $( grep "^${blAddress}" "${blSource}" ) |grep -Ev "(${blAddress}|blacklisted)" |grep . || echo "          <none>"
+  echo
+}
+
+function bl_enable {
+  hostName="$1"  
+  sudo sed -i "/^${blAddress}/s/[ ][ ]*${hostName}[ ]*/ /;/^${blAddress}/s/[ ][ ]*www.${hostName}[ ]*/ /;/^${blAddress}/s/[ ]*$/ ${hostName} www.${hostName}/" /etc/hosts
+}
+
+function bl_disable {
+  hostName="$1"  
+  sudo sed -i "/^${blAddress}/s/[ ][ ]*${hostName}[ ]*/ /;/^${blAddress}/s/[ ][ ]*www.${hostName}[ ]*/ /" /etc/hosts
+}
+
+##################################################################
+
+bl_options_load
+
+if [ $# -lt 1 ] || [ "$1" == "-h" ] || [ "$1" == "--help" ] ; then  
+  echo 'bl [CMD [CMD]...]
+
+  Manages blacklist line in /etc/hosts.
+  
+Installation:
+
+  To /etc/hosts add two lines:
+  
+#!bl key:domain key2:domain2
+127.0.130.1 blacklisted
+
+  The file and ip address can be altered by editing the script.
+
+Operations:
+
+  key     - Same as +key
+  +key    - Add domain cooresponding to available key
+  -key    - Remove domain cooresponding to available key
+  @domain - Add domain
+  ^domain - Remove domain
+
+'
+  echo "Enabled:"
+  bl_current_print
+  echo "Available:"
+  bl_options_print
+else
+  for op in "$@" ; do
+    key="$( echo "$op" |sed 's/[^a-z]//' )"
+    operand="$( echo "$op" |sed 's/[^+-@^]//g' )"
+    operand="${operand:0:1}"
+    operand="${operand:-+}"
+    [ ${#key} -lt 1 ] && echo "Invalid key '$op'" && continue
+    
+#    printf "debug: op:'%s'  operand:'%s'  key:'%s'  value:'%s'\n" "$op" "$operand" "$key" "${opts[${key}]}"
+  
+    # if key exists in available options
+    if [ "${opts[${key}]+1}" ] || [ "$operand" == "@" ] || [ "$operand" == "^" ]
+    then
+      case "$operand" in
+        -) bl_disable "${opts[${key}]}" ;;
+	+) bl_enable  "${opts[${key}]}" ;;
+	@) bl_enable  "${key}"          ;;
+	^) bl_disable "${key}"          ;;
+	*) echo "Unknown error with '$op'" ;;
+      esac
+    else
+      echo "Unknown key '${key}' -- try adding it with bl +{$key}"
+    fi
+  done
+fi
+
+

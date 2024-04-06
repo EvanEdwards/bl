@@ -1,19 +1,9 @@
----
-name: bl
-description: Simple hosts blacklist script in bash
-type: code
-author: Evan Edwards
-category: utility
----
-
-
-# bl
 
 `bl [CMD [CMD]...]`
 
 Manages blacklist line in /etc/hosts.
 
-
+  
 # Demonstration
 
 ![Screen Recording](bl-demo.gif)
