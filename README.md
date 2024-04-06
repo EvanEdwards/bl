@@ -1,4 +1,6 @@
 
+# bl
+
 `bl [CMD [CMD]...]`
 
 Manages blacklist line in /etc/hosts.
