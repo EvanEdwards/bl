@@ -36,8 +36,8 @@ Optional: The file and ip address can be altered by editing the script.
 
 ```
   key     - Same as +key
-  +key    - Add domain cooresponding to available key
-  -key    - Remove domain cooresponding to available key
+  +key    - Add domain corresponding to available key
+  -key    - Remove domain corresponding to available key
   @domain - Add domain
   ^domain - Remove domain
 ```
