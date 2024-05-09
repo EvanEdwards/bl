@@ -11,7 +11,7 @@ category: utility
 
 `bl [CMD [CMD]...]`
 
-Manages blacklist line in /etc/hosts.
+A simple script to quickly manage a blacklist line in /etc/hosts.
 
 
 # Demonstration
@@ -29,6 +29,8 @@ Manages blacklist line in /etc/hosts.
 127.0.130.1 blacklisted
 ```
 
+The #!bl line lists a set of key:value pairs that are used on the command line.  For instance, `fb:facebook.com` allows you to blacklist facebook.com and www.facebook.com with `bl fb` and then remove it with `bl -fb`.   You can always directly add or remove a full domain with `@` or `^`.
+
 Optional: The file and ip address can be altered by editing the script.
 
 
@@ -41,6 +43,12 @@ Optional: The file and ip address can be altered by editing the script.
   @domain - Add domain
   ^domain - Remove domain
 ```
+
+
+# TODO
+
+- [ ] Clear all
+- [ ] Groups?  Personally I use bash aliases for groups of domains, so there is no built in option for a group of domains.
 
 
 # Legal
