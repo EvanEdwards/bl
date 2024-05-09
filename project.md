@@ -51,6 +51,7 @@ Optional: The file and ip address can be altered by editing the script.
 - [ ] Groups?  Personally I use bash aliases for groups of domains, so there is no built in option for a group of domains.
 
 
+
 # Legal
 
 Copyright 2024 Evan Edwards <evan@cheshirehall.net>
